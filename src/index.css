@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: black;
+  color: white;
+  overflow: hidden;
+}
+
+/* fade */
+.fade {
+  animation: fadeIn 1.2s ease-in;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* center lock */
+.center {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* input */
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin: 10px;
+}
+
+/* intro */
+.intro {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #1a001f, black);
+}
+
+.logo {
+  font-size: 40px;
+  color: pink;
+  letter-spacing: 3px;
+}
+
+/* content */
+.content {
+  text-align: center;
+  padding: 30px;
+}
+
+/* photos */
+.photos {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.photos img {
+  width: 140px;
+  border-radius: 15px;
+}
+
+/* button */
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ff4d88;
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* hearts animation */
+.hearts::before {
+  content: "💖 💕 💖 💕 💖 💕 💖";
+  position: absolute;
+  width: 100%;
+  animation: float 10s linear infinite;
+  opacity: 0.2;
+  font-size: 30px;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh); }
+  100% { transform: translateY(-100vh); }
+}
+
+/* letter */
+.letter {
+  font-size: 18px;
+  max-width: 500px;
+  margin: auto;
+  line-height: 1.6;
+  color: #ffb3d9;
+}
