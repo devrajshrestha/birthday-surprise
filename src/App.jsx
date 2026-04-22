@@ -1,162 +1,123 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function App() {
-  const [step, setStep] = useState("lock");
-  const [name, setName] = useState("");
+  const [stage, setStage] = useState("intro");
   const [text, setText] = useState("");
-  const audioRef = useRef(null);
 
-  const message =
-`Happy Birthday My Love ❤️
+  const message = `Happy Birthday Usha Shrestha 💖
 
-You are my whole universe.
+You are my favorite person in this world.
+
 Every moment with you feels like a movie.
 
-I just want to see you smile forever 💖`;
+I just want you to smile forever ❤️`;
 
-  // ✍️ typing effect
+  // typing effect
   useEffect(() => {
-    if (step !== "home") return;
+    if (stage !== "message") return;
 
     let i = 0;
     const interval = setInterval(() => {
       setText(message.slice(0, i));
       i++;
       if (i > message.length) clearInterval(interval);
-    }, 40);
+    }, 35);
 
     return () => clearInterval(interval);
-  }, [step]);
+  }, [stage]);
 
-  // 🎵 smooth music start
-  const startMusic = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/music.mp3");
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0;
-
-      audioRef.current.play().then(() => {
-        // fade in
-        let v = 0;
-        const fade = setInterval(() => {
-          if (v < 0.7) {
-            v += 0.02;
-            audioRef.current.volume = v;
-          } else {
-            clearInterval(fade);
-          }
-        }, 100);
+  // play music safely (mobile fix)
+  const playMusic = () => {
+    const audio = document.getElementById("bg-music");
+    if (audio) {
+      audio.play().catch(() => {
+        console.log("User interaction required");
       });
-    }
-  };
-
-  // 🎉 confetti / fireworks
-  const fireworks = async () => {
-    const confetti = (await import("canvas-confetti")).default;
-    confetti({ particleCount: 300, spread: 180 });
-  };
-
-  // 🔐 unlock screen
-  const unlock = () => {
-    if (name.toLowerCase() === "usha shrestha") {
-      setStep("intro");
-    } else {
-      alert("Wrong name 💔 try again");
     }
   };
 
   return (
     <div className="app">
 
-      {/* 💖 FLOATING HEARTS */}
-      <div className="hearts"></div>
+      {/* 🎵 MUSIC */}
+      <audio id="bg-music" loop>
+        <source src="/music.mp3" type="audio/mp3" />
+      </audio>
 
-      {/* 🔐 LOCK SCREEN */}
-      {step === "lock" && (
-        <div className="center">
-          <h1>🔐 Enter Secret Name</h1>
+      {/* 💖 FLOATING HEARTS (non-blocking clicks) */}
+      <div className="hearts">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <span key={i} className="heart">💖</span>
+        ))}
+      </div>
 
-          <input
-            placeholder="Type her name..."
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+      {/* 🎬 INTRO */}
+      {stage === "intro" && (
+        <div className="screen">
+          <h1>🎬 A Cinematic Surprise</h1>
+          <p>Made with love ❤️</p>
 
-          <button onClick={unlock}>Unlock 💖</button>
+          <button onClick={() => setStage("gift")}>
+            Start Surprise
+          </button>
         </div>
       )}
 
-      {/* 🎬 INTRO NETFLIX STYLE */}
-      {step === "intro" && (
-        <div
-          className="intro"
-          onClick={() => {
-            setStep("home");
-            startMusic();
-            fireworks();
-          }}
-        >
-          <h1 className="logo">MY LOVE STORY</h1>
-          <p>Click to begin 💖</p>
+      {/* 🎁 GIFT */}
+      {stage === "gift" && (
+        <div className="screen">
+          <div
+            className="gift"
+            onClick={() => {
+              playMusic();
+              setStage("message");
+            }}
+          >
+            🎁
+          </div>
+          <p>Tap the gift</p>
         </div>
       )}
 
-      {/* 💖 HOME */}
-      {step === "home" && (
-        <div className="content fade">
+      {/* 💌 MESSAGE */}
+      {stage === "message" && (
+        <div className="screen">
+          <h2>💖 Happy Birthday 💖</h2>
 
-          <h1>💖 Surprise 💖</h1>
-
-          <pre>{text}</pre>
+          <pre className="text">{text}</pre>
 
           <div className="photos">
             <img src="/Screenshot1.png" />
             <img src="/Screenshot2.png" />
           </div>
 
-          <button onClick={() => setStep("dance")}>
-            💃 Let’s Dance
+          <button onClick={() => setStage("video")}>
+            🎬 Next Scene
           </button>
-
         </div>
       )}
 
-      {/* 🎬 DANCE VIDEO */}
-      {step === "dance" && (
-        <div className="content fade">
+      {/* 🎥 VIDEO */}
+      {stage === "video" && (
+        <div className="screen">
+          <h2>Our Memory 🎥</h2>
 
-          <h1>🎬 Our Moment</h1>
-
-          <video autoPlay muted loop playsInline width="320">
+          <video autoPlay muted loop playsInline className="video">
             <source src="/video.mp4" type="video/mp4" />
           </video>
 
-          <button onClick={() => setStep("final")}>
-            💌 Final Message
+          <button onClick={() => setStage("ending")}>
+            ❤️ Final Surprise
           </button>
-
         </div>
       )}
 
-      {/* 💌 FINAL LOVE LETTER */}
-      {step === "final" && (
-        <div className="content fade">
-
-          <h1>💖 I Love You</h1>
-
-          <p className="letter">
-            You are not just my love... you are my peace, my home, my everything ❤️
-          </p>
-
-          <button
-            onClick={() => {
-              fireworks();
-              setStep("home");
-            }}
-          >
-            🔁 Replay
-          </button>
-
+      {/* 💖 ENDING */}
+      {stage === "ending" && (
+        <div className="screen ending">
+          <h1>💖 I Love You 💖</h1>
+          <p>You are my forever happiness</p>
+          <div className="fireworks">🎆 ✨ 🎇</div>
         </div>
       )}
 
