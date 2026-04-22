@@ -1,129 +1,174 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b0b0f;
+  font-family: Arial;
+  background: radial-gradient(circle, #1a1a2e, #000);
   color: white;
   overflow-x: hidden;
 }
 
-/* APP */
-.app {
-  min-height: 100vh;
-  position: relative;
-}
-
-/* SCREEN */
-.screen {
+/* PAGE */
+.page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   text-align: center;
-  position: relative;
-  z-index: 2;
+  padding: 15px;
+}
+
+/* START PAGE */
+.start-page {
+  gap: 10px;
+}
+
+.input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  margin-top: 10px;
 }
 
 /* BUTTON */
 button {
-  margin-top: 15px;
-  padding: 12px 20px;
-  border: none;
+  padding: 12px 18px;
   border-radius: 25px;
-  background: #ff4d6d;
+  border: none;
+  margin-top: 15px;
+  background: linear-gradient(45deg, #ff4d6d, #ff758f);
   color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  position: relative;
-  z-index: 5;
 }
 
-/* GIFT */
-.gift {
-  font-size: 4rem;
-  cursor: pointer;
-  animation: bounce 1.5s infinite;
-}
-
-/* TEXT */
-.text {
-  white-space: pre-wrap;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* PHOTOS */
-.photos {
+/* 💖 IMAGES (NOW VISIBLE PROPERLY) */
+.image-grid {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   margin-top: 20px;
 }
 
-.photos img {
-  width: 45%;
-  border-radius: 10px;
+.image {
+  width: 150px;
+  border-radius: 12px;
 }
 
-/* VIDEO */
-.video {
-  width: 100%;
-  max-width: 350px;
-  border-radius: 10px;
+/* 🎂 CAKE FIX (PERFECT CENTER SPLIT) */
+.cake-container {
+  position: relative;
+  width: 260px;
+  height: 220px;
+  margin: 20px auto;
 }
 
-/* ENDING */
-.ending {
-  background: radial-gradient(circle, #ff004f, #000);
-}
-
-/* HEARTS (IMPORTANT FIX) */
-.hearts {
-  position: absolute;
+/* WRAPPER */
+.cake-wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  pointer-events: none; /* 🔥 FIX BUTTON ISSUE */
-  z-index: 1;
 }
 
-.heart {
+/* LEFT HALF */
+.cake-half.left {
   position: absolute;
-  bottom: -50px;
-  animation: floatUp 6s linear infinite;
-  opacity: 0.6;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
 }
 
-/* random hearts */
-.heart:nth-child(1) { left: 10%; animation-delay: 0s; }
-.heart:nth-child(2) { left: 20%; animation-delay: 1s; }
-.heart:nth-child(3) { left: 30%; animation-delay: 2s; }
-.heart:nth-child(4) { left: 40%; animation-delay: 3s; }
-.heart:nth-child(5) { left: 50%; animation-delay: 4s; }
-
-/* ANIMATIONS */
-@keyframes floatUp {
-  0% { transform: translateY(0); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateY(-100vh); opacity: 0; }
+.cake-half.left img {
+  width: 260px;
+  transform: translateX(0);
 }
 
-@keyframes bounce {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+/* RIGHT HALF */
+.cake-half.right {
+  position: absolute;
+  right: 0;
+  width: 50%;
+  overflow: hidden;
+}
+
+.cake-half.right img {
+  width: 260px;
+  transform: translateX(-50%);
+}
+
+/* SPLIT ANIMATION (PERFECT CENTER GAP) */
+.cut .left {
+  transform: translateX(-60px);
+  transition: 1s ease;
+}
+
+.cut .right {
+  transform: translateX(60px);
+  transition: 1s ease;
+}
+
+/* 🔪 KNIFE */
+.knife {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  transition: 1s;
+}
+
+.knife-down {
+  transform: translate(-50%, 130px);
+}
+
+/* 🎉 CONFETTI */
+.confetti {
+  margin-top: 20px;
+  animation: fall 2s linear;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(150px);
+    opacity: 0;
+  }
+}
+
+/* 🎥 VIDEO */
+.video {
+  width: 95%;
+  max-width: 450px;
+  border-radius: 12px;
+}
+
+/* 💖 FINAL */
+.final {
+  background: radial-gradient(circle, #ff4d6d, #000);
+}
+
+.glow {
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #ff4d6d; }
+  to { text-shadow: 0 0 30px #ff99aa; }
+}
+
+/* HEARTS */
+.love-hearts {
+  font-size: 2rem;
+  margin-top: 20px;
 }
 
 /* MOBILE */
 @media (max-width: 600px) {
-  .photos {
+  .image-grid {
     flex-direction: column;
   }
 
-  .photos img {
-    width: 100%;
+  .image {
+    width: 90%;
   }
 
-  button {
-    width: 100%;
+  .video {
+    width: 95%;
   }
 }
