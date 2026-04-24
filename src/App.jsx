@@ -10,32 +10,98 @@ export default function App() {
   const [cutProgress, setCutProgress] = useState(0);
   const [isCakeAnimating, setIsCakeAnimating] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({ 
+    days: 0, 
+    hours: 0, 
+    minutes: 0, 
+    seconds: 0,
+    totalSeconds: 0 
+  });
+  const [canProceed, setCanProceed] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
 
   const bgMusicRef = useRef(null);
   const birthdayRef = useRef(null);
   const videoRef = useRef(null);
 
+  // Target date: April 25th, 2026 at 12:00 AM
+  // CHANGE THIS LINE TO SET YOUR DESIRED DATE & TIME
+  const targetDate = new Date(2026, 3, 25, 0, 0, 0); // Year, Month(0-11), Day, Hour, Minute, Second
+  // For testing (10 seconds from now): 
+  // const targetDate = new Date(Date.now() + 10000);
+
+  // Calculate initial total seconds for progress bar
+  const getTotalSeconds = () => {
+    const now = new Date();
+    const diff = targetDate - now;
+    return diff > 0 ? diff / 1000 : 0;
+  };
+
   // Photos for memories page
   const memories = [
-  { id: 1, src: "/1.jpg", title: "Teddia Street Magic", subtitle: "Where our story began 💫" },
-  { id: 2, src: "/3.jpg", title: "Victory Dance", subtitle: "Champions of Love 🏆" },
-  { id: 3, src: "/5.jpg", title: "Perfectly Imperfect", subtitle: "Real love, real moments 💕" },
-  { id: 4, src: "/11.jpg", title: "Triple Fortune", subtitle: "Lucky to have you 福" },
-  { id: 5, src: "/5.jpg", title: "Beautiful Disaster", subtitle: "Love in every moment 💖" },
-  { id: 6, src: "/6.jpg", title: "Golden Hour", subtitle: "Our best times together 🌅" },
-  { id: 7, src: "/7.jpg", title: "Heartbeat", subtitle: "You make my heart sing 💓" },
-  { id: 8, src: "/8.jpg", title: "Wanderlust", subtitle: "Exploring love together 🌍" },
-  { id: 9, src: "/9.jpg", title: "Perfect Picture", subtitle: "You + Me = Forever 📸" },
-  { id: 10, src: "/10.jpg", title: "Dream Weaver", subtitle: "Making dreams come true ✨" },
-  { id: 11, src: "/11.jpg", title: "Lucky Charm", subtitle: "Blessed with your love 🍀" },
-  { id: 12, src: "/12.jpg", title: "Soulmates", subtitle: "Two hearts, one love 💑" },
-  { id: 13, src: "/13.jpg", title: "Timeless", subtitle: "Moments that last forever ⏰" },
-  { id: 14, src: "/14.jpg", title: "Ever After", subtitle: "Our happily ever after 👑" }
-];
+    { id: 1, src: "/1.jpg", title: "Teddia Street Magic", subtitle: "Where our story began 💫" },
+    { id: 2, src: "/3.jpg", title: "Victory Dance", subtitle: "Champions of Love 🏆" },
+    { id: 3, src: "/5.jpg", title: "Perfectly Imperfect", subtitle: "Real love, real moments 💕" },
+    { id: 4, src: "/11.jpg", title: "Triple Fortune", subtitle: "Lucky to have you 福" },
+    { id: 5, src: "/5.jpg", title: "Beautiful Disaster", subtitle: "Love in every moment 💖" },
+    { id: 6, src: "/6.jpg", title: "Golden Hour", subtitle: "Our best times together 🌅" },
+    { id: 7, src: "/7.jpg", title: "Heartbeat", subtitle: "You make my heart sing 💓" },
+    { id: 8, src: "/8.jpg", title: "Wanderlust", subtitle: "Exploring love together 🌍" },
+    { id: 9, src: "/9.jpg", title: "Perfect Picture", subtitle: "You + Me = Forever 📸" },
+    { id: 10, src: "/10.jpg", title: "Dream Weaver", subtitle: "Making dreams come true ✨" },
+    { id: 11, src: "/11.jpg", title: "Lucky Charm", subtitle: "Blessed with your love 🍀" },
+    { id: 12, src: "/12.jpg", title: "Soulmates", subtitle: "Two hearts, one love 💑" },
+    { id: 13, src: "/13.jpg", title: "Timeless", subtitle: "Moments that last forever ⏰" },
+    { id: 14, src: "/14.jpg", title: "Ever After", subtitle: "Our happily ever after 👑" }
+  ];
+
+  // Timer effect with progress bar
+  useEffect(() => {
+    const startTime = new Date();
+    const endTime = targetDate;
+    const totalDuration = endTime - startTime;
+    
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = endTime - now;
+
+      if (difference <= 0) {
+        setCanProceed(true);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, totalSeconds: 0 });
+        setProgressPercent(100);
+        clearInterval(timer);
+      } else {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        const totalSeconds = Math.floor(difference / 1000);
+        
+        setTimeLeft({ days, hours, minutes, seconds, totalSeconds });
+        
+        // Calculate progress percentage
+        const elapsed = Date.now() - startTime;
+        const percent = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+        setProgressPercent(percent);
+      }
+    }, 100);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-redirect when timer reaches zero
+  useEffect(() => {
+    if (canProceed && started && page === "timer") {
+      // Small delay before redirecting to show celebration
+      setTimeout(() => {
+        setPage("home");
+      }, 500);
+    }
+  }, [canProceed, started, page]);
 
   useEffect(() => {
     const enableAudio = () => {
-      if (bgMusicRef.current && page !== "cake" && page !== "home") {
+      if (bgMusicRef.current && page !== "cake" && page !== "home" && page !== "timer") {
         bgMusicRef.current.play().catch(() => {});
       }
     };
@@ -47,7 +113,10 @@ export default function App() {
     };
   }, [page]);
 
-  const startApp = () => setStarted(true);
+  const startApp = () => {
+    setStarted(true);
+    setPage("timer");
+  };
 
   const playBirthday = () => {
     if (birthdayRef.current) {
@@ -88,6 +157,23 @@ export default function App() {
         setCakeCut(true);
       }
     }, 40);
+  };
+
+  // Format date for display
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   };
 
   return (
@@ -159,13 +245,109 @@ export default function App() {
         </div>
       )}
 
+      {/* TIMER PAGE - Countdown Timer */}
+      {started && page === "timer" && !canProceed && (
+        <div className="page fade-in">
+          <div className="glass-card timer-card">
+            <div className="floating-emoji">⏰ 💖 🎂 ⏰</div>
+            <h2>Countdown to Your Special Moment</h2>
+            <p className="message-text">
+              Dear <strong>{name}</strong>, our magical surprise is being prepared just for you...
+              <br /><br />
+              The celebration will begin on <strong>{formatDate(targetDate)} at {formatTime(targetDate)}</strong>
+            </p>
+            
+            {/* Animated Countdown Timer */}
+            <div className="timer-container">
+              <div className="timer-block">
+                <div className="timer-number">{String(timeLeft.days).padStart(2, '0')}</div>
+                <div className="timer-label">Days</div>
+                <div className="timer-sub-label">🎉</div>
+              </div>
+              <div className="timer-separator">:</div>
+              <div className="timer-block">
+                <div className="timer-number">{String(timeLeft.hours).padStart(2, '0')}</div>
+                <div className="timer-label">Hours</div>
+                <div className="timer-sub-label">⏰</div>
+              </div>
+              <div className="timer-separator">:</div>
+              <div className="timer-block">
+                <div className="timer-number">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                <div className="timer-label">Minutes</div>
+                <div className="timer-sub-label">💫</div>
+              </div>
+              <div className="timer-separator">:</div>
+              <div className="timer-block">
+                <div className="timer-number">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                <div className="timer-label">Seconds</div>
+                <div className="timer-sub-label">✨</div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="progress-container">
+              <div className="progress-label">Time Remaining</div>
+              <div className="progress-bar-wrapper">
+                <div className="progress-fill" style={{ width: `${progressPercent}%` }}>
+                  <div className="progress-glow"></div>
+                </div>
+              </div>
+              <div className="progress-stats">
+                <span>{Math.floor(timeLeft.totalSeconds / 3600)}h</span>
+                <span>{Math.floor((timeLeft.totalSeconds % 3600) / 60)}m</span>
+                <span>{timeLeft.totalSeconds % 60}s remaining</span>
+              </div>
+            </div>
+
+            {/* Waiting Message with Animation */}
+            <div className="waiting-message">
+              <div className="waiting-hearts">
+                💖 💕 💗 💓 💞 💖
+              </div>
+              <p>Something magical is being prepared just for you...</p>
+              <div className="loading-dots">
+                <span>.</span><span>.</span><span>.</span>
+              </div>
+            </div>
+
+            {/* Estimated arrival info */}
+            <div className="estimated-info">
+              <p>🎈 The moment you've been waiting for is almost here! 🎈</p>
+              <p className="small-text">Your birthday surprise will unlock automatically</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TIMER COMPLETE - Celebration Page */}
+      {started && page === "timer" && canProceed && (
+        <div className="page zoom-in">
+          <div className="glass-card celebration-card">
+            <div className="celebration-emoji">🎉 🎊 🎂 🎈 🎁</div>
+            <h2 className="celebration-title">IT'S TIME! 🎉</h2>
+            <p className="message-text">
+              The wait is over, {name}!<br />
+              Your special moment has arrived! 💖
+            </p>
+            <div className="sparkle-burst">
+              ✨ ✨ ✨ ✨ ✨
+            </div>
+            <button onClick={() => setPage("home")} className="celebrate-btn">
+              Start the Celebration! 🎉
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* MESSAGE PAGE */}
-      {started && page === "home" && (
+      {page === "home" && canProceed && (
         <div className="page slide-up">
           <div className="glass-card">
             <div className="emoji-float">💕 💖 💗 💓 💞</div>
             <h2>Happy Birthday {name}! 🎉</h2>
             <p className="message-text">
+              The magic is finally here! 🎊
+              <br /><br />
               Even though miles may separate us, my heart is right there with you today 💖
               <br /><br />
               Let's make this virtual celebration unforgettable! ✨
@@ -224,6 +406,7 @@ export default function App() {
         </div>
       )}
 
+      {/* REST OF YOUR EXISTING CODE FOR CAKE, DANCE, FINAL PAGES */}
       {/* CAKE PAGE - Animated Cake Slicing */}
       {page === "cake" && (
         <div className="page zoom-in">
@@ -234,7 +417,6 @@ export default function App() {
             </p>
 
             <div className="cake-cutting-container">
-              {/* Whole Cake */}
               <div className={`cake-whole ${cakeCut ? "fade-out" : ""}`}>
                 <div className="cake-3d">
                   <div className="cake-layer bottom-layer"></div>
@@ -271,7 +453,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Sliced Cake Pieces */}
               {cakeCut && (
                 <div className="cake-slices">
                   <div className="cake-slice slice-1 animate-slice">
